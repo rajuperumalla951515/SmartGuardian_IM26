@@ -1,4 +1,4 @@
-# 🛡️ Smart Guardian: Unified Safety & Monitoring Ecosystem
+#  Smart Guardian: Unified Safety & Monitoring Ecosystem
 **Finalist @ Hackathon 2026**
 
 ![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
@@ -11,34 +11,61 @@ Smart Guardian is a state-of-the-art safety and real-time monitoring solution de
 
 ---
 
-## 🚀 Vision & Problem Statement
+##  Vision & Problem Statement
 In an increasingly mobile world, personal safety and vehicle compliance are paramount. Smart Guardian addresses these challenges by offering a dual-interface ecosystem that empowers both the traveler and their guardian with real-time, actionable intelligence.
 
 ---
 
-## ✨ Key Technical Modules
+##  Key Technical Modules
 
-### 🛡️ Smart Guardian SOS
+###  Smart Guardian SOS
 - **Instant Response**: One-tap emergency trigger system.
 - **Broadcast System**: Concurrent alerting to all connected guardians with precise location telemetry.
 - **Status Monitoring**: Active lifecycle management of emergency events.
 
-### 📍 Real-Time Live Tracking
+###  Real-Time Live Tracking
 - **Supabase Realtime**: Leverages PostgreSQL `Replication` for low-latency coordinate synchronization.
 - **Dynamic Polylines**: Smooth route rendering and update cycles based on live movement.
 - **Interactive Map Screen**: Integrated Google Maps SDK with optimized marker management.
 
-### 🪖 AI-Driven Safety Compliance
+###  AI-Driven Safety Compliance
 - **Helmet Detection**: Integrated Computer Vision logic to ensure rider safety before journey commencement.
 - **Safety Scoring**: Intelligent algorithm to rate rider behavior and compliance over time.
 
-### 📡 Guardian/Tracker Mode
+###  Guardian/Tracker Mode
 - **Multi-User Monitoring**: Dedicated "Tracker" interface allowing guardians to oversee multiple profiles simultaneously.
 - **Remote Messaging**: Direct communication channel between Tracker and User via Supabase.
 
 ---
 
 ## 🔄 Application Flow & Architecture
+
+```mermaid
+graph TD
+    A[Start: Login/Register] --> B{Select Role}
+    B -- User/Rider --> C[User Dashboard]
+    B -- Tracker/Guardian --> D[Guardian Dashboard]
+
+    C --> E[Select Destination]
+    E --> F[Helmet Detection AI Check]
+    F -- Pass --> G[Start Journey]
+    F -- Fail --> F
+
+    G --> H[Live GPS Stream]
+    H --> I[Supabase Realtime]
+
+    D --> J[Monitor Active Users]
+    J --> K[Live Route Visualization]
+    I --> K
+
+    G --> L{Emergency?}
+    L -- Yes --> M[Trigger SOS Alert]
+    M --> N[Instant Alert to Guardians]
+    N --> D
+
+    K --> O[Safe Arrival]
+    O --> P[Session Summary & Stats]
+```
 
 1.  **Onboarding**: Multi-role entry point (User or Tracker/Guardian).
 2.  **Authentication**: Secure identity management via Supabase Auth.
@@ -50,7 +77,7 @@ In an increasingly mobile world, personal safety and vehicle compliance are para
 
 ---
 
-## 🛠️ Technology Stack & Skills
+##  Technology Stack & Skills
 
 ### **Core Frameworks**
 - **Flutter (v3.x)**: For high-performance, cross-platform UI.
