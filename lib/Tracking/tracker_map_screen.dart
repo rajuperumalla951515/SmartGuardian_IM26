@@ -42,7 +42,7 @@ class _TrackerMapScreenState extends State<TrackerMapScreen> {
     final userId = widget.userProfile['id'];
     final journeyService = Provider.of<JourneyService>(context, listen: false);
 
-    // 1. Fetch latest active journey and its full details
+
     try {
       final journey = await _supabase
           .from('journeys')
@@ -66,7 +66,7 @@ class _TrackerMapScreenState extends State<TrackerMapScreen> {
           _currentPos = LatLng(lat, lng);
         }
 
-        // Fetch Polylines
+
         if (_startPos != null && _destPos != null) {
           final points = await journeyService.getPolylinePoints(
             _startPos!,
@@ -97,7 +97,7 @@ class _TrackerMapScreenState extends State<TrackerMapScreen> {
       setState(() => _isLoading = false);
     }
 
-    // 2. Listen for real-time updates to the journeys table for this user
+
     _channel = _supabase
         .channel('tracker_journey_$userId')
         .onPostgresChanges(
@@ -118,22 +118,22 @@ class _TrackerMapScreenState extends State<TrackerMapScreen> {
                 final newPos = LatLng(lat, lng);
                 setState(() {
                   _currentPos = newPos;
-                  
-                  // Trim polyline
+
+
                   if (_allRoutePoints.isNotEmpty) {
                     int closestIndex = 0;
                     double minDistance = double.infinity;
-                    
+
                     for (int i = 0; i < _allRoutePoints.length; i++) {
                       final p = _allRoutePoints[i];
-                      final d = (p.latitude - newPos.latitude).abs() + 
+                      final d = (p.latitude - newPos.latitude).abs() +
                                 (p.longitude - newPos.longitude).abs();
                       if (d < minDistance) {
                         minDistance = d;
                         closestIndex = i;
                       }
                     }
-                    
+
                     final remainingPoints = _allRoutePoints.sublist(closestIndex);
                     _polylines.removeWhere((p) => p.polylineId.value == 'route');
                     _polylines.add(
@@ -145,7 +145,7 @@ class _TrackerMapScreenState extends State<TrackerMapScreen> {
                       ),
                     );
                   }
-                  
+
                   _updateMarkers();
                 });
                 if (_mapController != null) {
@@ -153,7 +153,7 @@ class _TrackerMapScreenState extends State<TrackerMapScreen> {
                 }
               }
             } else if (newRecord['status'] == 'completed') {
-              // Journey ended, notify tracker
+
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -171,7 +171,7 @@ class _TrackerMapScreenState extends State<TrackerMapScreen> {
   void _updateMarkers() async {
     final Set<Marker> newMarkers = {};
 
-    // 1. Source Marker
+
     if (_startPos != null) {
       newMarkers.add(
         Marker(
@@ -188,7 +188,7 @@ class _TrackerMapScreenState extends State<TrackerMapScreen> {
       );
     }
 
-    // 2. Destination Marker
+
     if (_destPos != null) {
       newMarkers.add(
         Marker(
@@ -200,7 +200,7 @@ class _TrackerMapScreenState extends State<TrackerMapScreen> {
       );
     }
 
-    // 3. User Marker (moving)
+
     if (_currentPos != null) {
       final photoUrl = widget.userProfile['photo_url'];
       BitmapDescriptor icon = BitmapDescriptor.defaultMarkerWithHue(
@@ -260,7 +260,7 @@ class _TrackerMapScreenState extends State<TrackerMapScreen> {
             onMapCreated: (controller) {
               _mapController = controller;
               if (_startPos != null && _destPos != null) {
-                // Adjust bounds to show both start and end
+
                 LatLngBounds bounds = LatLngBounds(
                   southwest: LatLng(
                     _startPos!.latitude < _destPos!.latitude
@@ -326,8 +326,8 @@ class _TrackerMapScreenState extends State<TrackerMapScreen> {
             const Center(
               child: CircularProgressIndicator(color: AppTheme.primaryOrange),
             ),
-          
-          // Safety Status Badge
+
+
           Positioned(
             top: 16,
             right: 16,
@@ -363,7 +363,7 @@ class _TrackerMapScreenState extends State<TrackerMapScreen> {
             ),
           ),
 
-          // Bottom Info Panel
+
           Positioned(
             bottom: 20,
             left: 16,
@@ -371,7 +371,7 @@ class _TrackerMapScreenState extends State<TrackerMapScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Real-time Status Card
+
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(

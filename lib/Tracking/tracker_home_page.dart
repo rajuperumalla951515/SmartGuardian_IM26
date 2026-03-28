@@ -17,7 +17,7 @@ class _TrackerHomePageState extends State<TrackerHomePage> {
     setState(() {
       _refreshKey = UniqueKey();
     });
-    // The FutureBuilders will automatically re-fire because the key changed
+
     await Future.delayed(const Duration(milliseconds: 500));
   }
 
@@ -108,7 +108,7 @@ class _TrackerHomePageState extends State<TrackerHomePage> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    // Pending Requests Section
+
                     FutureBuilder<List<Map<String, dynamic>>>(
                       key: ValueKey('pending_$_refreshKey'),
                       future: authService.getSentTrackingRequests(),
@@ -186,7 +186,7 @@ class _TrackerHomePageState extends State<TrackerHomePage> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    // Tracked Profiles Section
+
                     FutureBuilder<List<Map<String, dynamic>>>(
                       key: ValueKey('tracked_$_refreshKey'),
                       future: authService.getTrackedProfiles(),
@@ -523,7 +523,7 @@ class _TrackerHomePageState extends State<TrackerHomePage> {
                               backgroundColor: Colors.green,
                             ),
                           );
-                          // Refresh the page
+
                           _refreshData();
                         }
                       } catch (e) {

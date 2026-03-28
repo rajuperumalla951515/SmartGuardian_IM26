@@ -35,7 +35,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Spacer(),
-              // Animated Vehicle Logo
+
               const Icon(Icons.two_wheeler, size: 120, color: Colors.white)
                   .animate(onPlay: (controller) => controller.repeat())
                   .shimmer(
@@ -77,7 +77,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
               const Spacer(),
 
-              // Terms and Conditions Section
+
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
                 padding: const EdgeInsets.all(20),

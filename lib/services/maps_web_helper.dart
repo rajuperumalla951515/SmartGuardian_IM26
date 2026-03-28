@@ -10,7 +10,7 @@ class MapsWebHelper {
       final google = dart_js.context['google'];
       if (google == null) return false;
 
-      // Use cast or check to avoid "undefined" access crash
+
       if (google is! dart_js.JsObject) return false;
       if (!google.hasProperty('maps')) return false;
 
@@ -164,7 +164,7 @@ class MapsWebHelper {
 
       final request = dart_js.JsObject.jsify({
         'input': input,
-        // Optional: restriction to India or current bounds could be added
+
       });
 
       autocompleteService.callMethod('getPlacePredictions', [

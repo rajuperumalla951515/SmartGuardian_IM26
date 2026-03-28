@@ -33,16 +33,16 @@ class _SOSScreenState extends State<SOSScreen> {
       String locationName = "Current User Location";
 
       if (iconPos != null) {
-        // Prefer Icon Position (if user is in demo/simulation)
+
         lat = iconPos.latitude;
         lng = iconPos.longitude;
 
-        // Try to get address
+
         locationName = await journeyService.getAddressFromLatLng(
           LatLng(lat, lng),
         );
       } else {
-        // 1. Get real-time location
+
         bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
         if (!serviceEnabled) {
           throw Exception('Location services are disabled.');
@@ -60,7 +60,7 @@ class _SOSScreenState extends State<SOSScreen> {
         lat = position.latitude;
         lng = position.longitude;
 
-        // Fetch address for real GPS position
+
         locationName = await journeyService.getAddressFromLatLng(
           LatLng(lat, lng),
         );
@@ -77,10 +77,10 @@ class _SOSScreenState extends State<SOSScreen> {
       final formattedTime =
           "${now.day}/${now.month}/${now.year} ${now.hour}:${now.minute}";
 
-      // Build Google Maps navigation link
+
       final mapsLink = 'https://www.google.com/maps?q=$lat,$lng';
 
-      // 2. Send SOS alert
+
       final success = await emailService.sendSOSPremiumAlert(
         emergencyEmail: emergencyEmail,
         fullName: fullName,
@@ -92,7 +92,7 @@ class _SOSScreenState extends State<SOSScreen> {
       );
 
       if (success) {
-        // 3. Save to database
+
         await journeyService.saveSOS(
           userId: authService.user?.id ?? '',
           userName: fullName,
@@ -195,7 +195,7 @@ class _SOSScreenState extends State<SOSScreen> {
               ),
               _buildContactTile('Police', '100'),
               _buildContactTile('Ambulance', '108'),
-              // _buildContactTile('Home (Emergency)', '+91 9876543210'),
+
               const SizedBox(height: 20),
             ],
           ),

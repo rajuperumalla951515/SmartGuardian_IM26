@@ -55,7 +55,7 @@ class _TrackerRegisterScreenState extends State<TrackerRegisterScreen> {
             _nameController.text.trim(),
             _emailController.text.trim(),
             _passwordController.text.trim(),
-            'TRACKER-001', // Default or hidden for trackers
+            'TRACKER-001',
             role: 'tracker',
           );
 

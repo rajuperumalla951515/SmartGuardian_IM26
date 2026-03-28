@@ -10,7 +10,7 @@ class JourneyScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Journey'),
-        backgroundColor: Colors.transparent, // Use premium background from body
+        backgroundColor: Colors.transparent,
       ),
       extendBodyBehindAppBar: true,
       body: Container(
@@ -59,7 +59,7 @@ class JourneyScreen extends StatelessWidget {
                     color: Colors.black.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(20),
                     image: const DecorationImage(
-                      image: NetworkImage('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=1000'), // Premium Map Abstract Background
+                      image: NetworkImage('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=1000'),
                       fit: BoxFit.cover,
                       opacity: 0.3,
                     ),

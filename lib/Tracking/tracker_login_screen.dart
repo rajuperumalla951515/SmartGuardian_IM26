@@ -56,7 +56,7 @@ class _TrackerLoginScreenState extends State<TrackerLoginScreen> {
 
         if (mounted) {
           await authService.getProfile();
-          // Check if the profile comes from the trackers table (via isTracker)
+
           if (!authService.isTracker) {
             await authService.logout();
             ScaffoldMessenger.of(context).showSnackBar(

@@ -3,17 +3,17 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class EmailService {
-  // ─────────────────────────────────────────────────────────────────────────
-  // EmailJS credentials — using same as AuthService
-  // ─────────────────────────────────────────────────────────────────────────
+
+
+
   static const String _serviceId = 'service_smuxq4m';
   static const String _publicKey = 'tmxqqbH_JgwNFONgt';
 
-  // Template IDs
+
   static const String _sosTemplateId = 'df7mqq5';
-  // If user has other templates, they can be added here.
-  // For now we'll use a generic approach or default to the verified SOS one if needed.
-  // ─────────────────────────────────────────────────────────────────────────
+
+
+
 
   Future<bool> _sendViaEmailJS({
     required String toEmail,
@@ -44,17 +44,17 @@ class EmailService {
     }
   }
 
-  /// Send a welcome email to a new user
+
   Future<bool> sendWelcomeEmail(String userEmail, String userName) async {
     return _sendViaEmailJS(
       toEmail: userEmail,
       templateId:
-          'template_welcome', // Placeholder - user should verify this ID
+          'template_welcome',
       templateParams: {'user_name': userName},
     );
   }
 
-  /// Send SOS alert to emergency contacts
+
   Future<bool> sendSOSAlert({
     required List<String> emergencyEmails,
     required String userName,
@@ -76,7 +76,7 @@ class EmailService {
     return allSent;
   }
 
-  /// Send SOS premium alert with detailed template
+
   Future<bool> sendSOSPremiumAlert({
     required String emergencyEmail,
     required String fullName,
@@ -100,7 +100,7 @@ class EmailService {
     );
   }
 
-  /// Send journey notification
+
   Future<bool> sendJourneyNotification({
     required String userEmail,
     required String userName,
@@ -110,7 +110,7 @@ class EmailService {
   }) async {
     return _sendViaEmailJS(
       toEmail: userEmail,
-      templateId: 'template_journey', // Placeholder
+      templateId: 'template_journey',
       templateParams: {
         'user_name': userName,
         'start_location': startLocation,
@@ -121,17 +121,17 @@ class EmailService {
     );
   }
 
-  /// Send custom email
+
   Future<bool> sendCustomEmail({
     required String to,
     required String subject,
     required String htmlBody,
   }) async {
-    // Note: EmailJS usually requires templates, so "custom email" with raw HTML
-    // might require a special template with a catch-all variable like {{message}}.
+
+
     return _sendViaEmailJS(
       toEmail: to,
-      templateId: 'template_custom', // Placeholder
+      templateId: 'template_custom',
       templateParams: {'subject': subject, 'message': htmlBody},
     );
   }

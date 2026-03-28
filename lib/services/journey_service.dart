@@ -15,11 +15,11 @@ class JourneyService extends ChangeNotifier {
   String _draftStartAddress = "";
   String _draftDestAddress = "";
 
-  // SOS/Icon Tracking
+
   LatLng? _currentIconPosition;
   String? _currentIconAddress;
 
-  // Active Journey Persistence
+
   Map<String, dynamic>? _activeJourney;
   String? _activeJourneyId;
   DateTime? _journeyStartTime;
@@ -82,8 +82,8 @@ class JourneyService extends ChangeNotifier {
   void updateIconPosition(LatLng? pos, [String? address]) {
     _currentIconPosition = pos;
     if (address != null) _currentIconAddress = address;
-    // We don't always want to notifyListeners here as it's called 60fps during animation,
-    // but the MapScreen is already rebuilding. The SOS screen will read it when opened.
+
+
   }
 
   Future<String?> startJourney({
@@ -173,9 +173,9 @@ class JourneyService extends ChangeNotifier {
       });
 
       _sosPoints.add(position);
-      // We don't manually add to _globalSosEvents here because the realtime listener
-      // will pick up the INSERT from Supabase and add it to the list for us.
-      // This avoids duplicates across different app instances.
+
+
+
       notifyListeners();
     } catch (e) {
       debugPrint('Error saving SOS event in DB: $e');
@@ -183,14 +183,14 @@ class JourneyService extends ChangeNotifier {
   }
 
   void initRealtimeSOS() {
-    if (_sosChannel != null) return; // Already listening
+    if (_sosChannel != null) return;
 
     _sosChannel =
         _supabase
             .channel('public:sos_events')
             .onPostgresChanges(
               event: PostgresChangeEvent
-                  .all, // Listen to all events for real-time sync
+                  .all,
               schema: 'public',
               table: 'sos_events',
               callback: (payload) {
@@ -203,7 +203,7 @@ class JourneyService extends ChangeNotifier {
                   final type = newRecord['incident_type'] as String?;
                   final desc = newRecord['incident_description'] as String?;
 
-                  // Check for duplicates before adding
+
                   final exists = _globalSosEvents.any(
                     (e) => e['created_at'] == createdAt,
                   );
@@ -319,7 +319,7 @@ class JourneyService extends ChangeNotifier {
   Future<bool> deleteSOS(String sosId) async {
     try {
       await _supabase.from('sos_events').delete().eq('id', sosId);
-      // Local removal happens via realtime listener
+
       return true;
     } catch (e) {
       debugPrint('Error deleting SOS event: $e');
@@ -360,7 +360,7 @@ class JourneyService extends ChangeNotifier {
         debugPrint("JS Geocoding exception: $e");
       }
 
-      // Fallback to proxy if JS fails (or keep it as secondary)
+
       debugPrint("Attempting Geocoding API call via Supabase proxy...");
       try {
         final response = await _supabase.functions.invoke(
@@ -405,12 +405,12 @@ class JourneyService extends ChangeNotifier {
   }
 
   String _cleanAddress(String address) {
-    // 1. Remove Plus Codes (e.g., FM3H+6GJ)
+
     final plusCodeRegex = RegExp(r'^[A-Z0-9]{4}\+[A-Z0-9]{2,}\s+');
     String cleaned = address.replaceFirst(plusCodeRegex, '');
 
-    // 2. Specific override requested by user:
-    // If it contains the Ghatkesar bridge string, replace it with the Institute Auditorium
+
+
     if (cleaned.contains("Ghatkesar Railway Footover bridge")) {
       cleaned = cleaned.replaceFirst(
         "Ghatkesar Railway Footover bridge",
@@ -427,20 +427,20 @@ class JourneyService extends ChangeNotifier {
       try {
         final data = await MapsWebHelper.getRouteDataWeb(start, dest);
         if (data != null) {
-          // Wrap in a format getDirections/getRouteData expects if needed
-          // Actually, let's optimize getRouteData to use JS directly
+
+
           return {
             "status": "OK",
             "routes": [
               {
                 "overview_polyline": {
                   "points": "",
-                }, // Not needed as we get points directly
+                },
                 "legs": [
                   {
                     "distance": {"text": data['distance']},
                     "duration": {"text": data['duration']},
-                    "points_js": data['points'], // Pass through directly
+                    "points_js": data['points'],
                   },
                 ],
               },
@@ -489,7 +489,7 @@ class JourneyService extends ChangeNotifier {
       final route = directions["routes"][0];
       final leg = route["legs"][0];
 
-      // Check if we have direct points from JS Interop
+
       if (leg["points_js"] != null) {
         return {
           'points': leg["points_js"] as List<LatLng>,

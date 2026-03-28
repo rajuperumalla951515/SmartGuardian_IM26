@@ -59,7 +59,7 @@ class _FaceScannerViewState extends State<FaceScannerView>
           _statusMessage = 'Press SCAN to begin';
           _statusColor = Colors.white;
         });
-        // Don't start automatic scanning
+
       }
     } catch (e) {
       debugPrint('Camera init error: $e');
@@ -87,7 +87,7 @@ class _FaceScannerViewState extends State<FaceScannerView>
     });
 
     try {
-      // Small delay for UI feedback
+
       await Future.delayed(const Duration(milliseconds: 500));
 
       final XFile file = await _cameraController!.takePicture();
@@ -105,7 +105,7 @@ class _FaceScannerViewState extends State<FaceScannerView>
     }
   }
 
-  // _processCameraImage removed as we use takePicture now
+
 
   Future<void> _processImageBytes(Uint8List bytes) async {
     try {
@@ -191,8 +191,8 @@ class _FaceScannerViewState extends State<FaceScannerView>
           Center(
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close Alert
-                Navigator.of(context).pop(); // Go back to Home
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF64FFDA),
@@ -246,7 +246,7 @@ class _FaceScannerViewState extends State<FaceScannerView>
           Center(
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close Alert
+                Navigator.of(context).pop();
                 setState(() {
                   _helmetDetected = false;
                   _isScanning = false;
@@ -310,7 +310,7 @@ class _FaceScannerViewState extends State<FaceScannerView>
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Camera Preview
+
           Transform.scale(
             scale: 1.25,
             child: Center(
@@ -321,13 +321,13 @@ class _FaceScannerViewState extends State<FaceScannerView>
             ),
           ),
 
-          // Glassmorphic Overlays
+
           _buildScanningOverlay(),
 
-          // Status Card
+
           _buildStatusCard(),
 
-          // Scan Button (only show if not detected)
+
           if (!_helmetDetected && !_isScanning) _buildScanButton(),
         ],
       ),
@@ -337,7 +337,7 @@ class _FaceScannerViewState extends State<FaceScannerView>
   Widget _buildScanningOverlay() {
     return Stack(
       children: [
-        // Darkened borders
+
         ColorFiltered(
           colorFilter: ColorFilter.mode(
             Colors.black.withOpacity(0.4),
@@ -365,7 +365,7 @@ class _FaceScannerViewState extends State<FaceScannerView>
           ),
         ),
 
-        // Animated Reticle
+
         if (!_helmetDetected)
           Center(
             child: AnimatedBuilder(
@@ -385,7 +385,7 @@ class _FaceScannerViewState extends State<FaceScannerView>
                   ),
                   child: Stack(
                     children: [
-                      // Face Silhouette Overlay
+
                       Center(
                         child: Icon(
                           Icons.face_retouching_natural_rounded,

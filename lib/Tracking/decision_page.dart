@@ -62,7 +62,7 @@ class _DecisionPageState extends State<DecisionPage> {
 
                 const SizedBox(height: 60),
 
-                // User Option
+
                 _buildRoleOption(
                   title: 'User',
                   subtitle: 'Primary application user',
@@ -72,7 +72,7 @@ class _DecisionPageState extends State<DecisionPage> {
 
                 const SizedBox(height: 20),
 
-                // Tracker Option
+
                 _buildRoleOption(
                   title: 'Tracker',
                   subtitle: 'Monitor and safety tracking',
@@ -82,7 +82,7 @@ class _DecisionPageState extends State<DecisionPage> {
 
                 const Spacer(),
 
-                // Continue Button
+
                 SizedBox(
                   width: double.infinity,
                   height: 60,

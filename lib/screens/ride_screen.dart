@@ -26,7 +26,7 @@ class _RideScreenState extends State<RideScreen> {
   bool _isJourneyActive = false;
   bool _isSending = false;
 
-  
+
   LatLng? _startLocation;
   LatLng? _destinationLocation;
   bool _isSelectingStart = true;
@@ -43,7 +43,7 @@ class _RideScreenState extends State<RideScreen> {
   LatLng? _currentPos;
   BitmapDescriptor? _userIcon;
   bool _isDisposed = false;
-  String? _vehicleType; 
+  String? _vehicleType;
 
   @override
   void initState() {
@@ -55,7 +55,7 @@ class _RideScreenState extends State<RideScreen> {
 
   void _loadDraftJourney() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      
+
       final args = ModalRoute.of(context)?.settings.arguments as Map?;
       if (args != null) {
         _vehicleType = args['vehicleType'] as String?;
@@ -120,7 +120,7 @@ class _RideScreenState extends State<RideScreen> {
 
     if (permission == LocationPermission.deniedForever) return;
 
-    
+
     try {
       final pos = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
@@ -145,7 +145,7 @@ class _RideScreenState extends State<RideScreen> {
         Geolocator.getPositionStream(
           locationSettings: const LocationSettings(
             accuracy: LocationAccuracy.high,
-            distanceFilter: 0, 
+            distanceFilter: 0,
           ),
         ).listen((Position position) {
           final newPos = LatLng(position.latitude, position.longitude);
@@ -190,7 +190,7 @@ class _RideScreenState extends State<RideScreen> {
     }
 
     if (!_isJourneyActive) {
-     
+
       final proceed = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -221,7 +221,7 @@ class _RideScreenState extends State<RideScreen> {
 
       if (proceed != true) return;
 
-      
+
       final journeyId = await journeyService.startJourney(
         userId: authService.user?.id ?? '',
         start: _startLocation!,
@@ -248,7 +248,7 @@ class _RideScreenState extends State<RideScreen> {
         return;
       }
 
-      // Navigating to map with route data
+
       if (mounted) {
         final journeyData = {
           'start': _startLocation,
@@ -262,17 +262,17 @@ class _RideScreenState extends State<RideScreen> {
         Navigator.pushNamed(context, '/map', arguments: journeyData);
       }
     } else {
-      // End journey in DB
+
       if (_currentJourneyId != null) {
         final dbSuccess = await journeyService.endJourney(_currentJourneyId!);
         if (dbSuccess) {
-          // Update user statistics on successful completion
+
           await authService.updateOnlineStatus('Active');
 
           _currentJourneyId = null;
           setState(() => _isJourneyActive = false);
           journeyService.clearActiveJourney();
-          await _clearHomeFormState(); // Clear persisted Home Screen form data
+          await _clearHomeFormState();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -293,7 +293,7 @@ class _RideScreenState extends State<RideScreen> {
       userName: authService.userFullName,
       startLocation: _startController.text,
       destination: _destController.text,
-      isStarting: _isJourneyActive, // _isJourneyActive already toggled
+      isStarting: _isJourneyActive,
     );
 
     setState(() => _isSending = false);
@@ -340,7 +340,7 @@ class _RideScreenState extends State<RideScreen> {
       }
     }
 
-    // Auto-fetch route if both points are selected
+
     if (_startLocation != null && _destinationLocation != null) {
       _getRoute(_startLocation!, _destinationLocation!);
     }
@@ -430,7 +430,7 @@ class _RideScreenState extends State<RideScreen> {
   void _updateMarkers() {
     final Set<Marker> newMarkers = {};
 
-    // Live user position
+
     if (_currentPos != null) {
       newMarkers.add(
         Marker(
@@ -505,7 +505,7 @@ class _RideScreenState extends State<RideScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // Location Inputs
+
                 _buildAutocompleteInput(
                   label: 'Start Location',
                   icon: Icons.my_location,
@@ -548,7 +548,7 @@ class _RideScreenState extends State<RideScreen> {
 
                 const SizedBox(height: 30),
 
-                // Map Selection Controls
+
                 if (!_isJourneyActive)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12),
@@ -573,7 +573,7 @@ class _RideScreenState extends State<RideScreen> {
                     ),
                   ),
 
-                // Map Integration
+
                 Stack(
                   children: [
                     Container(
@@ -594,7 +594,7 @@ class _RideScreenState extends State<RideScreen> {
                             ),
                             myLocationEnabled: true,
                             myLocationButtonEnabled:
-                                false, // Custom button below
+                                false,
                             zoomControlsEnabled: true,
                             mapToolbarEnabled: false,
                             markers: _markers,
@@ -608,11 +608,11 @@ class _RideScreenState extends State<RideScreen> {
                             onMapCreated: (GoogleMapController controller) async {
                               _mapController = controller;
 
-                              // Center on current position immediately if no start/dest yet
+
                               if (_startLocation == null &&
                                   _destinationLocation == null) {
                                 try {
-                                  // 1. Fast last known position for immediate response (Mobile Only)
+
                                   if (!kIsWeb) {
                                     final lastPos =
                                         await Geolocator.getLastKnownPosition();
@@ -636,7 +636,7 @@ class _RideScreenState extends State<RideScreen> {
                                     }
                                   }
 
-                                  // 2. Get accurate current position (Web & Mobile)
+
                                   try {
                                     final pos =
                                         await Geolocator.getCurrentPosition(
@@ -720,7 +720,7 @@ class _RideScreenState extends State<RideScreen> {
                             );
                             setState(() => _followingUser = true);
                           } else {
-                            // Force a fresh high-accuracy fetch if current pos is null
+
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -737,7 +737,7 @@ class _RideScreenState extends State<RideScreen> {
                                     ),
                                   ).timeout(
                                     const Duration(seconds: 10),
-                                  ); // Increased timeout
+                                  );
 
                               final latLng = LatLng(
                                 pos.latitude,
@@ -757,7 +757,7 @@ class _RideScreenState extends State<RideScreen> {
                               debugPrint(
                                 "Manual high-accuracy location fetch failed: $e",
                               );
-                              // Final fallback to last known if even high-accuracy fails/times out (Mobile Only)
+
                               if (!kIsWeb) {
                                 final lastPos =
                                     await Geolocator.getLastKnownPosition();
@@ -826,7 +826,7 @@ class _RideScreenState extends State<RideScreen> {
 
     return RawAutocomplete<Map<String, String>>(
       textEditingController: controller,
-      focusNode: FocusNode(), // Simple focus node for base autocomplete
+      focusNode: FocusNode(),
       optionsBuilder: (TextEditingValue textEditingValue) async {
         if (textEditingValue.text.isEmpty) {
           return const Iterable<Map<String, String>>.empty();
@@ -870,7 +870,7 @@ class _RideScreenState extends State<RideScreen> {
             child: Container(
               width:
                   MediaQuery.of(context).size.width -
-                  48, // Match input width roughly
+                  48,
               constraints: const BoxConstraints(maxHeight: 250),
               child: ListView.builder(
                 padding: EdgeInsets.zero,
@@ -912,7 +912,7 @@ class _RideScreenState extends State<RideScreen> {
               }
               _updateMarkers();
 
-              // Move camera to selected point
+
               _mapController?.animateCamera(
                 CameraUpdate.newLatLngZoom(latLng, 15),
               );

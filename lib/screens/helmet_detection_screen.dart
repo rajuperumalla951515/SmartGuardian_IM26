@@ -36,8 +36,8 @@ class HelmetDetectionScreen extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              
-              // Header Instruction
+
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: Column(
@@ -72,7 +72,7 @@ class HelmetDetectionScreen extends StatelessWidget {
                 ),
               ),
 
-              // Footer Technical details
+
               Padding(
                 padding: const EdgeInsets.fromLTRB(40, 0, 40, 40),
                 child: Container(

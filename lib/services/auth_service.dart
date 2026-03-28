@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService extends ChangeNotifier {
   final SupabaseClient _supabase = Supabase.instance.client;
-  // Use 10.0.2.2 for Android Emulator, localhost for iOS/Web
+
   final String _pythonBackendUrl = kIsWeb
       ? "http://127.0.0.1:8000/verify"
       : "http://10.0.2.2:8000/verify";
@@ -40,7 +40,7 @@ class AuthService extends ChangeNotifier {
 
     if (savedProfile != null) {
       _localProfile = jsonDecode(savedProfile);
-      // Attempt to sync with Supabase but don't block
+
       _refreshProfile();
     }
 
@@ -63,7 +63,7 @@ class AuthService extends ChangeNotifier {
     if (id == null) return;
 
     try {
-      // Try profiles table first
+
       final data = await _supabase
           .from('profiles')
           .select()
@@ -82,7 +82,7 @@ class AuthService extends ChangeNotifier {
         return;
       }
 
-      // Try trackers table
+
       final trackerData = await _supabase
           .from('trackers')
           .select()
@@ -119,7 +119,7 @@ class AuthService extends ChangeNotifier {
 
   Map<String, dynamic>? get currentProfile => _trackerProfile ?? _localProfile;
 
-  // Real-time Auth Stream - limited utility if bypassing official auth
+
   Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
 
   User? get currentUserModel => _supabase.auth.currentUser;
@@ -129,7 +129,7 @@ class AuthService extends ChangeNotifier {
     if (_localProfile != null) return _localProfile;
     if (_user == null) return null;
 
-    // Check trackers table first if we suspect a tracker, or just try both
+
     try {
       final trackerData = await _supabase
           .from('trackers')
@@ -152,7 +152,7 @@ class AuthService extends ChangeNotifier {
     final id = _user?.id ?? _localProfile?['id'];
     if (id == null) return false;
     try {
-      // Replacement strategy: Use the provided list directly to allow screens full control
+
       final updatedContacts = List<dynamic>.from(newContacts);
 
       await _supabase.from('profiles').upsert({
@@ -181,7 +181,7 @@ class AuthService extends ChangeNotifier {
           })
           .eq('id', id);
 
-      // Try to update official auth if available
+
       try {
         await _supabase.auth.updateUser(
           UserAttributes(data: {'full_name': fullName}),
@@ -342,7 +342,7 @@ class AuthService extends ChangeNotifier {
         'created_at': profile?['created_at'],
         'face_verified': profile?['face_verified'] ?? false,
         'face_verified_at': profile?['face_verified_at'],
-        'email_verified': true, // Hardcoded to true for bypass
+        'email_verified': true,
         'last_sign_in': DateTime.now().toIso8601String(),
         'total_rides': profile?['total_rides'] ?? 0,
         'total_points': profile?['total_points'] ?? 0,
@@ -371,11 +371,11 @@ class AuthService extends ChangeNotifier {
       final newSpeeding = currentRides + rideIncrement;
       final newPoints = currentPoints + pointIncrement;
 
-      // Calculate a realistic safe riding percentage if it's 0.0
+
       double newScore = currentScore;
       if (rideIncrement > 0) {
-        // If we are adding a ride, we slightly increase/decrease score
-        // For now, let's assume a successful ride increases score slightly unless it was already high
+
+
         newScore =
             (currentScore * currentRides + (100.0 + scoreAdjustment)) /
             (currentRides + 1);
@@ -383,7 +383,7 @@ class AuthService extends ChangeNotifier {
         if (newScore < 0) newScore = 0;
       }
 
-      // Determine rank
+
       String rank = 'Rookie';
       if (newPoints > 5000) {
         rank = 'Legend';
@@ -418,7 +418,7 @@ class AuthService extends ChangeNotifier {
     if (trackerId == null) return [];
 
     try {
-      // Call the SECURITY DEFINER RPC — bypasses all RLS to avoid recursion
+
       final data = await _supabase.rpc(
         'get_tracked_profiles',
         params: {'tracker_uuid': trackerId},
@@ -430,7 +430,7 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  /// Forces a notification to all listeners to refresh tracking UI
+
   void refreshTrackingData() {
     notifyListeners();
   }
@@ -447,7 +447,7 @@ class AuthService extends ChangeNotifier {
     final otp = (Random().nextInt(900000) + 100000).toString();
 
     try {
-      // 1. Send OTP via EmailJS
+
       final response = await http.post(
         Uri.parse('https://api.emailjs.com/api/v1.0/email/send'),
         headers: {'Content-Type': 'application/json'},
@@ -456,7 +456,7 @@ class AuthService extends ChangeNotifier {
           'template_id': _trackingTemplateId,
           'user_id': _trackingPublicKey,
           'template_params': {
-            'email': normalizedEmail, // recipient email
+            'email': normalizedEmail,
             'REQUESTER_NAME': trackerName,
             'FULL_NAME': 'Smart Guardian User',
             'OTP': otp,
@@ -469,7 +469,7 @@ class AuthService extends ChangeNotifier {
         throw Exception('Failed to send tracking request email.');
       }
 
-      // 2. Save/Update request in tracking_links table
+
       await _supabase.from('tracking_links').upsert({
         'tracker_id': trackerId,
         'primary_user_email': normalizedEmail,
@@ -595,7 +595,7 @@ class AuthService extends ChangeNotifier {
   Future<void> login(String email, String password) async {
     final normalizedEmail = email.trim().toLowerCase();
     try {
-      // First attempt official login
+
       try {
         await _supabase.auth.signInWithPassword(
           email: normalizedEmail,
@@ -608,14 +608,14 @@ class AuthService extends ChangeNotifier {
         debugPrint('Official login failed, trying bypass: $officialError');
       }
 
-      // Bypass: Check if user exists via secure RPC first (bypasses RLS for existence check)
+
       final exists = await _supabase.rpc(
         'email_exists',
         params: {'p_email': normalizedEmail},
       );
 
       if (exists == true) {
-        // 1. Try profiles table first
+
         final profileData = await _supabase
             .from('profiles')
             .select()
@@ -632,7 +632,7 @@ class AuthService extends ChangeNotifier {
           return;
         }
 
-        // 2. Try trackers table
+
         final trackerData = await _supabase
             .from('trackers')
             .select()
@@ -648,7 +648,7 @@ class AuthService extends ChangeNotifier {
           return;
         }
 
-        // 3. Fallback
+
         throw Exception(
           'Account found but profile inaccessible in both tables. Please contact support.',
         );
@@ -672,7 +672,7 @@ class AuthService extends ChangeNotifier {
 
     final normalizedEmail = email.trim().toLowerCase();
 
-    // 1. Attempt official signup
+
     final response = await _supabase.auth.signUp(
       email: normalizedEmail,
       password: password,
@@ -682,21 +682,21 @@ class AuthService extends ChangeNotifier {
     userId = response.user?.id;
 
     if (userId == null) {
-      // If we got here and didn't throw, but have no ID, check if user already exists
-      // Supabase sometimes returns a success but no user if email confirmation is required but user exists
+
+
       throw Exception(
         'Registration issue: User might already exist or confirmation required.',
       );
     }
 
-    // If official signup didn't provide an ID, we'll check if a profile exists by email first.
+
     final exists = await _supabase.rpc(
       'email_exists',
       params: {'p_email': normalizedEmail},
     );
     if (exists == true) {
-      // If it exists, we shouldn't try to upsert as it might cause conflict or confusing error
-      // Instead, try to get the ID if possible to see if we can just log them in
+
+
       final existing = await _supabase
           .from('profiles')
           .select('id')
@@ -707,7 +707,7 @@ class AuthService extends ChangeNotifier {
           'You are a primary user, you cannot register here as a tracker.',
         );
       } else {
-        // Exists in DB but RLS blocks selection - likely a profile exists
+
         throw Exception(
           'An account with this email already exists. Please Login with OTP.',
         );
@@ -732,7 +732,7 @@ class AuthService extends ChangeNotifier {
           _trackerProfile = response;
         } catch (e) {
           debugPrint('Tracker profile creation handled by trigger or RLS: $e');
-          // If upsert fails (RLS), try to fetch what the trigger created
+
           final existing = await _supabase
               .from('trackers')
               .select()
@@ -790,11 +790,11 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  // Forgot Password logic - Uses EmailJS and Supabase password update
+
   Future<void> sendPasswordResetEmail(String email) async {
     final normalizedEmail = email.trim().toLowerCase();
     try {
-      // 1. Verify user exists (Match robustness of sendLoginOTP)
+
       final rpcExists = await _supabase.rpc(
         'email_exists',
         params: {'p_email': normalizedEmail},
@@ -810,18 +810,18 @@ class AuthService extends ChangeNotifier {
         throw Exception('Account not found with this email.');
       }
 
-      // 2. Generate 6-digit OTP
+
       final otp = (Random().nextInt(900000) + 100000).toString();
       _pendingResetOTP = otp;
       _pendingResetEmail = normalizedEmail;
 
-      // 3. Send via EmailJS
+
       final response = await http.post(
         Uri.parse('https://api.emailjs.com/api/v1.0/email/send'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'service_id': _emailjsServiceId,
-          'template_id': _loginTemplateId, // Using verification template
+          'template_id': _loginTemplateId,
           'user_id': _emailjsPublicKey,
           'template_params': {
             'email': normalizedEmail,
@@ -856,22 +856,22 @@ Valid for 5 minutes. Do not share this code with anyone.
   ) async {
     final normalizedEmail = email.trim().toLowerCase();
     try {
-      // 1. Verify locally
+
       if (_pendingResetOTP == null ||
           _pendingResetEmail != normalizedEmail ||
           _pendingResetOTP != token.trim()) {
         throw Exception('Invalid verification code or expired.');
       }
 
-      // 2. Update password in Supabase
-      // Note: In a real app, you'd use a secure RPC or admin API if bypassing normal auth.
-      // Here we assume the user is "signed in" or we use the auth service if session exists.
-      // But since we are bypassing, we'll try to update the user attributes.
 
-      // If user isn't logged in, we can't directly use updateAttribute without a session.
-      // However, for this bypass flow, we will update the password directly if we have a way.
-      // Usually, Supabase requires a session. If no session, we'd need an Edge Function.
-      // As a fallback for this demo, we'll assume the reset flow works if verify passes.
+
+
+
+
+
+
+
+
 
       await _supabase.auth.updateUser(UserAttributes(password: newPassword));
 
@@ -888,18 +888,18 @@ Valid for 5 minutes. Do not share this code with anyone.
     return verifyRegistrationOTP(email, token);
   }
 
-  // Registration OTP - Sends code via EmailJS before account creation
+
   Future<void> sendRegistrationOTP(String email, String name) async {
     final normalizedEmail = email.trim().toLowerCase();
 
-    // 1. Check if email already exists
-    // (A) Check via secure RPC (checks auth.users)
+
+
     final rpcExists = await _supabase.rpc(
       'email_exists',
       params: {'p_email': normalizedEmail},
     );
 
-    // (B) Fallback: Check profiles table directly
+
     final profileQuery = await _supabase
         .from('profiles')
         .select('id')
@@ -912,11 +912,11 @@ Valid for 5 minutes. Do not share this code with anyone.
       );
     }
 
-    // 2. Generate 6-digit OTP
+
     final otp = (Random().nextInt(900000) + 100000).toString();
     _pendingRegistrationOTP = otp;
 
-    // 3. Send via EmailJS
+
     final response = await http.post(
       Uri.parse('https://api.emailjs.com/api/v1.0/email/send'),
       headers: {'Content-Type': 'application/json'},
@@ -964,33 +964,33 @@ Team Smart Guardian''',
     if (_pendingRegistrationOTP == null) return false;
     final isValid = _pendingRegistrationOTP == enteredCode.trim();
     if (isValid) {
-      _pendingRegistrationOTP = null; // Clear after use
+      _pendingRegistrationOTP = null;
     }
     return isValid;
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // EmailJS credentials — replace these with your actual keys from
-  //   https://dashboard.emailjs.com
-  // ─────────────────────────────────────────────────────────────────────────
+
+
+
+
   static const String _emailjsServiceId = 'service_smuxq4m';
   static const String _registrationTemplateId = 'template_qy0ho9b';
   static const String _loginTemplateId = 'template_gzuk13l';
   static const String _emailjsPublicKey = 'tmxqqbH_JgwNFONgt';
 
-  // Tracking-specific credentials
+
   static const String _trackingServiceId = 'service_bmq887l';
   static const String _trackingTemplateId = 'template_q8qtqgr';
   static const String _trackingPublicKey = '7LdKoYlJ2nbVW8FMI';
-  // In your EmailJS tracking template, use:
-  // {{REQUESTER_NAME}}, {{FULL_NAME}}, {{OTP}}, {{VALIDITY_TIME}}
-  // ─────────────────────────────────────────────────────────────────────────
 
-  // Login with OTP — generates OTP via Supabase RPC (secure), sends via EmailJS
+
+
+
+
   Future<void> sendLoginOTP(String email) async {
     final normalizedEmail = email.trim().toLowerCase();
     try {
-      // 1. Check if the email is registered
+
       final rpcExists = await _supabase.rpc(
         'email_exists',
         params: {'p_email': normalizedEmail},
@@ -1010,12 +1010,12 @@ Team Smart Guardian''',
 
       final userName = profileQuery?['full_name'] ?? 'Smart Guardian User';
 
-      // 2. Generate 6-digit OTP locally and tie to email
+
       final otp = (Random().nextInt(900000) + 100000).toString();
       _pendingLoginOTP = otp;
       _pendingLoginEmail = normalizedEmail;
 
-      // 3. Send the OTP via EmailJS REST API
+
       final response = await http.post(
         Uri.parse('https://api.emailjs.com/api/v1.0/email/send'),
         headers: {'Content-Type': 'application/json'},
@@ -1056,24 +1056,24 @@ Valid for 5 minutes. Do not share this code with anyone.
   Future<bool> verifyLoginOTP(String email, String token) async {
     final normalizedEmail = email.trim().toLowerCase();
     try {
-      // 1. Verify locally (Tie to email)
+
       if (_pendingLoginOTP == null ||
           _pendingLoginEmail != normalizedEmail ||
           _pendingLoginOTP != token.trim()) {
         throw Exception('Invalid verification code or expired.');
       }
-      _pendingLoginOTP = null; // Clear after success
+      _pendingLoginOTP = null;
       _pendingLoginEmail = null;
 
-      // 2. Fetch profile from Supabase
+
       final data = await _supabase
           .from('profiles')
           .select()
-          .ilike('email', normalizedEmail) // Use ilike for case-insensitive
+          .ilike('email', normalizedEmail)
           .maybeSingle();
 
       if (data == null) {
-        // Fallback: Check if user exists in auth.users via RPC
+
         final rpcExists = await _supabase.rpc(
           'email_exists',
           params: {'p_email': normalizedEmail},
@@ -1083,7 +1083,7 @@ Valid for 5 minutes. Do not share this code with anyone.
           throw Exception('Account not found with this email.');
         }
 
-        // If they exist in auth but not in profiles, we create a basic profile or at least don't fail
+
         debugPrint(
           'User exists in Auth but missing profile for $normalizedEmail',
         );
@@ -1094,7 +1094,7 @@ Valid for 5 minutes. Do not share this code with anyone.
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user_profile', jsonEncode(data));
 
-      _user = _supabase.auth.currentUser; // Try to sync if possible
+      _user = _supabase.auth.currentUser;
       notifyListeners();
       return true;
     } catch (e) {
@@ -1125,9 +1125,9 @@ Valid for 5 minutes. Do not share this code with anyone.
     notifyListeners();
   }
 
-  // Verification helper
+
   bool isEmailVerified() {
-    return true; // Hardcoded to true for bypass
+    return true;
   }
 
   Future<void> updateUserPassword(String newPassword) async {

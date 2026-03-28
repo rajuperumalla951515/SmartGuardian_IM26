@@ -9,7 +9,7 @@ import '../theme/app_theme.dart';
 
 class WebcamFrameScanner extends StatefulWidget {
   final VoidCallback? onVerified;
-  
+
   const WebcamFrameScanner({super.key, this.onVerified});
 
   @override
@@ -32,7 +32,7 @@ class _WebcamFrameScannerState extends State<WebcamFrameScanner> with TickerProv
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
-    
+
     _scanLineController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
@@ -70,7 +70,7 @@ class _WebcamFrameScannerState extends State<WebcamFrameScanner> with TickerProv
 
   Future<void> _startScan() async {
     if (_helmetDetected || _isScanning || _cameraController == null || !_cameraController!.value.isInitialized) return;
-    
+
     setState(() {
       _isScanning = true;
       _statusMessage = 'INITIALIZING SENSORS';
@@ -94,7 +94,7 @@ class _WebcamFrameScannerState extends State<WebcamFrameScanner> with TickerProv
 
   Future<void> _processImage(Uint8List bytes) async {
     final authService = Provider.of<AuthService>(context, listen: false);
-    
+
     final bootSequence = [
       "CALIBRATING OPTICS...",
       "NEURAL MAPPING...",
@@ -112,7 +112,7 @@ class _WebcamFrameScannerState extends State<WebcamFrameScanner> with TickerProv
     }
 
     final result = await authService.verifyWithPython(bytes);
-    
+
     if (mounted) {
       if (result['status'] == 'success') {
         setState(() {
@@ -153,7 +153,7 @@ class _WebcamFrameScannerState extends State<WebcamFrameScanner> with TickerProv
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Camera layer
+
           ClipRRect(
             borderRadius: BorderRadius.circular(24),
             child: Transform.scale(
@@ -167,10 +167,10 @@ class _WebcamFrameScannerState extends State<WebcamFrameScanner> with TickerProv
             ),
           ),
 
-          // Tech Overlay
+
           _buildTechOverlay(),
 
-          // Status & Control
+
           _buildOverlayUI(),
         ],
       ),
@@ -201,7 +201,7 @@ class _WebcamFrameScannerState extends State<WebcamFrameScanner> with TickerProv
   Widget _buildTechOverlay() {
     return Stack(
       children: [
-        // Dark Vignette
+
         Container(
           decoration: BoxDecoration(
             gradient: RadialGradient(
@@ -211,7 +211,7 @@ class _WebcamFrameScannerState extends State<WebcamFrameScanner> with TickerProv
           ),
         ),
 
-        // Animated Scan Line
+
         if (_isScanning && !_helmetDetected)
           AnimatedBuilder(
             animation: _scanLineController,
@@ -237,13 +237,13 @@ class _WebcamFrameScannerState extends State<WebcamFrameScanner> with TickerProv
             },
           ),
 
-        // Corners
+
         _buildReticleCorner(top: 20, left: 20, quarterTurns: 0),
         _buildReticleCorner(top: 20, right: 20, quarterTurns: 1),
         _buildReticleCorner(bottom: 20, left: 20, quarterTurns: 3),
         _buildReticleCorner(bottom: 20, right: 20, quarterTurns: 2),
 
-        // Success Indicator
+
         if (_helmetDetected)
           Center(
             child: Container(
@@ -286,7 +286,7 @@ class _WebcamFrameScannerState extends State<WebcamFrameScanner> with TickerProv
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        // Status Bar
+
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

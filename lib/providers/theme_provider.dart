@@ -2,39 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider extends ChangeNotifier {
-  bool _isDarkMode = true; // Default to dark mode
-  
+  bool _isDarkMode = true;
+
   bool get isDarkMode => _isDarkMode;
-  
+
   ThemeProvider() {
     _loadTheme();
   }
-  
+
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     _isDarkMode = prefs.getBool('isDarkMode') ?? true;
     notifyListeners();
   }
-  
+
   Future<void> toggleTheme() async {
     _isDarkMode = !_isDarkMode;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isDarkMode', _isDarkMode);
     notifyListeners();
   }
-  
+
   ThemeData get themeData => _isDarkMode ? darkTheme : lightTheme;
-  
-  // Dark Theme (Primary)
+
+
   static final darkTheme = ThemeData(
     brightness: Brightness.dark,
-    primaryColor: const Color(0xFFF25912), // Orange
-    scaffoldBackgroundColor: const Color(0xFF000000), // Black
+    primaryColor: const Color(0xFFF25912),
+    scaffoldBackgroundColor: const Color(0xFF000000),
     colorScheme: const ColorScheme.dark(
-      primary: Color(0xFFF25912), // Orange
-      secondary: Color(0xFFFFE100), // Yellow
-      tertiary: Color(0xFF08CB00), // Green (Success)
-      surface: Color(0xFF121212), // Black
+      primary: Color(0xFFF25912),
+      secondary: Color(0xFFFFE100),
+      tertiary: Color(0xFF08CB00),
+      surface: Color(0xFF121212),
       error: Color(0xFFCF6679),
     ),
     appBarTheme: const AppBarTheme(
@@ -62,22 +62,22 @@ class ThemeProvider extends ChangeNotifier {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFF25912)), // Orange border
+        borderSide: const BorderSide(color: Color(0xFFF25912)),
       ),
       labelStyle: const TextStyle(color: Colors.white70),
       hintStyle: const TextStyle(color: Colors.white38),
     ),
   );
-  
-  // Light Theme (Secondary - but keeping consistent accent colors)
+
+
   static final lightTheme = ThemeData(
     brightness: Brightness.light,
-    primaryColor: const Color(0xFFF25912), // Orange
+    primaryColor: const Color(0xFFF25912),
     scaffoldBackgroundColor: const Color(0xFFF5F5F5),
     colorScheme: const ColorScheme.light(
-      primary: Color(0xFFF25912), // Orange
-      secondary: Color(0xFFFFE100), // Yellow
-      tertiary: Color(0xFF08CB00), // Green
+      primary: Color(0xFFF25912),
+      secondary: Color(0xFFFFE100),
+      tertiary: Color(0xFF08CB00),
       surface: Colors.white,
       error: Colors.redAccent,
     ),
@@ -106,7 +106,7 @@ class ThemeProvider extends ChangeNotifier {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFF25912)), // Orange
+        borderSide: const BorderSide(color: Color(0xFFF25912)),
       ),
       labelStyle: const TextStyle(color: Color(0xFF424242)),
       hintStyle: const TextStyle(color: Color(0xFF9E9E9E)),

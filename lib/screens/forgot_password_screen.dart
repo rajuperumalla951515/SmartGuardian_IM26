@@ -73,7 +73,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          // Redirect to login after successful reset
+
           Navigator.pushReplacementNamed(context, '/login');
         }
       }

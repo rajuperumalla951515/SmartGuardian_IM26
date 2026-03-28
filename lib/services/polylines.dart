@@ -1,5 +1,5 @@
 import 'dart:async';
-// ignore: avoid_web_libraries_in_flutter
+
 import 'dart:js' as js;
 
 import 'package:flutter/material.dart';
@@ -16,15 +16,15 @@ class OrderTrackingPage extends StatefulWidget {
 class _OrderTrackingPageState extends State<OrderTrackingPage> {
   final Completer<GoogleMapController> _controller = Completer();
 
-  LatLng? sourceLocation; // set from live GPS
-  LatLng? destinationLocation; // set by user tap
+  LatLng? sourceLocation;
+  LatLng? destinationLocation;
 
   List<LatLng> polylineCoordinates = [];
   bool _pickingDestination = false;
   bool _loadingLocation = true;
   StreamSubscription<Position>? _locationSub;
 
-  // ── Live Location ────────────────────────────────────────────────────────────
+
   Future<void> _startLiveLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) return;
@@ -37,7 +37,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
 
     if (permission == LocationPermission.deniedForever) return;
 
-    // Get initial fix
+
     final loc = await Geolocator.getCurrentPosition();
     final initial = LatLng(loc.latitude, loc.longitude);
 
@@ -47,12 +47,12 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
         _loadingLocation = false;
       });
 
-      // Move camera to current location
+
       final ctrl = await _controller.future;
       ctrl.animateCamera(CameraUpdate.newLatLngZoom(initial, 14));
     }
 
-    // Stream live updates
+
     _locationSub =
         Geolocator.getPositionStream(
           locationSettings: const LocationSettings(
@@ -64,14 +64,14 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
           final newPos = LatLng(loc.latitude, loc.longitude);
           setState(() => sourceLocation = newPos);
 
-          // Re-draw polyline if destination already set
+
           if (destinationLocation != null) {
             _fetchPolyline();
           }
         });
   }
 
-  // ── Polyline via JS DirectionsService ────────────────────────────────────────
+
   void _fetchPolyline() {
     if (sourceLocation == null || destinationLocation == null) return;
 
@@ -126,7 +126,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     ]);
   }
 
-  // ── Destination selection ────────────────────────────────────────────────────
+
   void _onSetDestinationPressed() {
     showDialog(
       context: context,
@@ -189,7 +189,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     super.dispose();
   }
 
-  // ── UI ───────────────────────────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -221,7 +221,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
             )
           : Stack(
               children: [
-                // ── Map ────────────────────────────────────────────────────
+
                 GoogleMap(
                   onMapCreated: (c) => _controller.complete(c),
                   initialCameraPosition: CameraPosition(
@@ -241,7 +241,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                     ),
                   },
                   markers: {
-                    // Live location marker (blue/start)
+
                     Marker(
                       markerId: const MarkerId('source'),
                       position: sourceLocation!,
@@ -262,7 +262,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                   },
                 ),
 
-                // ── Picking destination banner ───────────────────────────
+
                 if (_pickingDestination)
                   Positioned(
                     top: 0,
@@ -283,7 +283,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                     ),
                   ),
 
-                // ── Bottom button ────────────────────────────────────────
+
                 Positioned(
                   bottom: 24,
                   left: 16,

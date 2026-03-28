@@ -4,12 +4,12 @@ import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-// services
+
 import 'services/auth_service.dart';
 import 'providers/theme_provider.dart';
 import 'services/journey_service.dart';
 
-// screens
+
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/home_screen.dart';

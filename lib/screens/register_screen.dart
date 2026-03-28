@@ -29,7 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         final authService = Provider.of<AuthService>(context, listen: false);
 
         if (!_isOTPMode) {
-          // Step 1: Send OTP
+
           await authService.sendRegistrationOTP(
             _emailController.text.trim(),
             _nameController.text.trim(),
@@ -46,7 +46,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             );
           }
         } else {
-          // Step 2: Verify OTP and then Register
+
           final isOtpValid = authService.verifyRegistrationOTP(
             _emailController.text.trim(),
             _otpController.text.trim(),

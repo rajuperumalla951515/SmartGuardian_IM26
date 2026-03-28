@@ -49,14 +49,14 @@ class _MapScreenState extends State<MapScreen> {
   LatLng? _destLatLng;
   BitmapDescriptor? _redDotIcon;
 
-  // Route animation
+
   List<LatLng> _routePoints = [];
   Timer? _animationTimer;
   bool _isAnimating = false;
-  double _pausedTraveledMeters = 0.0; // Tracks progress for resume
-  String? _vehicleType; // From HomeScreen navigation args
+  double _pausedTraveledMeters = 0.0;
+  String? _vehicleType;
 
-  // Accident Alert variables
+
   Map<String, List<Map<String, String>>> _groupedAlerts = {};
   int _totalAlertsShown = 0;
   String _currentCategory = "Good Driving";
@@ -71,8 +71,8 @@ class _MapScreenState extends State<MapScreen> {
   Timer? _alertTimer;
   final ScrollController _alertScrollController = ScrollController();
   final ScrollController _incidentsScrollController = ScrollController();
-  Map<String, dynamic>? _activeSosEvent; // Currently triggered precise SOS
-  final Set<String> _triggeredSosIds = {}; // Track SOS alerts already triggered
+  Map<String, dynamic>? _activeSosEvent;
+  final Set<String> _triggeredSosIds = {};
   RealtimeChannel? _messageChannel;
 
   @override
@@ -116,7 +116,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _showTrackerMessageDialog(String sender, String message) {
-    // Speak the message for safety
+
     _speak("Message from $sender. $message");
 
     showDialog(
@@ -163,7 +163,7 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> _fetchGlobalSOS() async {
     final journeyService = Provider.of<JourneyService>(context, listen: false);
     await journeyService.fetchAllGlobalSOS();
-    journeyService.initRealtimeSOS(); // Start listening for live updates
+    journeyService.initRealtimeSOS();
   }
 
   Future<void> _initRedDotIcon() async {
@@ -203,7 +203,7 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> _initUserIcon() async {
     final authService = Provider.of<AuthService>(context, listen: false);
 
-    // Attempt to refresh profile if local profile is null
+
     if (authService.userPhotoUrl == null) {
       await authService.getProfile();
     }
@@ -250,9 +250,9 @@ class _MapScreenState extends State<MapScreen> {
 
     if (permission == LocationPermission.deniedForever) return;
 
-    // Fast initial location fetch for immediate feedback
+
     try {
-      // Try last known first (Mobile only)
+
       if (!kIsWeb) {
         final lastPos = await Geolocator.getLastKnownPosition();
         if (lastPos != null && mounted) {
@@ -263,12 +263,12 @@ class _MapScreenState extends State<MapScreen> {
         }
       }
 
-      // Then get a quick medium-accuracy current position
+
       final position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.medium,
         ),
-      ).timeout(const Duration(seconds: 10)); // Increased timeout
+      ).timeout(const Duration(seconds: 10));
 
       if (mounted) {
         setState(() {
@@ -288,7 +288,7 @@ class _MapScreenState extends State<MapScreen> {
         Geolocator.getPositionStream(
           locationSettings: const LocationSettings(
             accuracy: LocationAccuracy.high,
-            distanceFilter: 0, // Set to 0 for immediate feedback on movement
+            distanceFilter: 0,
           ),
         ).listen((Position position) async {
           final newPos = LatLng(position.latitude, position.longitude);
@@ -300,7 +300,7 @@ class _MapScreenState extends State<MapScreen> {
 
           if (_currentPos != null && _isAnimating) {
             final double dist = _haversineMeters(_currentPos!, newPos);
-            // Trigger new alert if moved more than 30m
+
             if (dist > 30.0) {
               _showNextAlert();
             }
@@ -340,7 +340,7 @@ class _MapScreenState extends State<MapScreen> {
         _destLatLng = sourceData['dest'];
         _vehicleType = sourceData['vehicleType'] as String?;
 
-        // Use the passed start location as the FIXED starting point for the route
+
         _startLatLng =
             sourceData['start'] ??
             _currentPos ??
@@ -398,7 +398,7 @@ class _MapScreenState extends State<MapScreen> {
 
         _fitBounds(start, dest);
 
-        // Calculate initial traveled distance if we are resuming
+
         final elapsed = journeyService.elapsedSeconds;
         final speedMs = _vehicleSpeedMs();
         double initialMeters = 0.0;
@@ -409,11 +409,11 @@ class _MapScreenState extends State<MapScreen> {
           );
         }
 
-        // Automatic animation trigger removed. Use 'DEMO' button to start animation.
-        // Future.delayed(
-        //   const Duration(seconds: 2),
-        //   () => _startRouteAnimation(initialTraveledMeters: initialMeters),
-        // );
+
+
+
+
+
       } else {
         setState(
           () => _instruction =
@@ -429,7 +429,7 @@ class _MapScreenState extends State<MapScreen> {
   void _updateMarkers() {
     final Set<Marker> newMarkers = {};
 
-    // User Marker
+
     if (_currentPos != null) {
       newMarkers.add(
         Marker(
@@ -445,7 +445,7 @@ class _MapScreenState extends State<MapScreen> {
       );
     }
 
-    // Start Marker (Green)
+
     if (_startLatLng != null) {
       newMarkers.add(
         Marker(
@@ -458,7 +458,7 @@ class _MapScreenState extends State<MapScreen> {
       );
     }
 
-    // Destination Marker
+
     if (_destLatLng != null) {
       newMarkers.add(
         Marker(
@@ -495,16 +495,16 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  /// Returns speed in m/s for the vehicle type selected on Home Screen
+
   double _vehicleSpeedMs() {
     final type = (_vehicleType ?? '').toLowerCase();
-    if (type.contains('two')) return 11.0; // ~40 km/h (bike/scooter)
-    if (type.contains('three')) return 8.0; // ~30 km/h (auto/tuk-tuk)
-    if (type.contains('four')) return 14.0; // ~50 km/h (car)
-    return 11.0; // default: two-wheeler
+    if (type.contains('two')) return 11.0;
+    if (type.contains('three')) return 8.0;
+    if (type.contains('four')) return 14.0;
+    return 11.0;
   }
 
-  /// Great-circle distance between two LatLng points in meters
+
   double _haversineMeters(LatLng a, LatLng b) {
     const r = 6371000.0;
     final lat1 = a.latitude * (3.141592653589793 / 180);
@@ -517,7 +517,7 @@ class _MapScreenState extends State<MapScreen> {
     return 2 * r * asin(sqrt(h));
   }
 
-  /// Precomputed cumulative distances along _routePoints
+
   List<double> _buildCumulativeDistances() {
     final distances = <double>[0.0];
     for (int i = 1; i < _routePoints.length; i++) {
@@ -528,12 +528,12 @@ class _MapScreenState extends State<MapScreen> {
     return distances;
   }
 
-  /// Gets the exact LatLng position at [traveledMeters] along the polyline
+
   LatLng _positionAtDistance(List<double> cumDist, double traveledMeters) {
     if (traveledMeters <= 0) return _routePoints.first;
     if (traveledMeters >= cumDist.last) return _routePoints.last;
 
-    // Binary search for the segment
+
     int lo = 0, hi = cumDist.length - 1;
     while (lo < hi - 1) {
       final mid = (lo + hi) >> 1;
@@ -567,7 +567,7 @@ class _MapScreenState extends State<MapScreen> {
     final speedMs = _vehicleSpeedMs();
 
     double traveledMeters = initialTraveledMeters;
-    const tickMs = 16; // ~60 fps
+    const tickMs = 16;
 
     debugPrint('(vehicle: $_vehicleType)');
 
@@ -583,17 +583,17 @@ class _MapScreenState extends State<MapScreen> {
       }
 
       traveledMeters += speedMs * (tickMs / 1000.0);
-      // Keep _pausedTraveledMeters in sync so STOP saves the right position
+
       _pausedTraveledMeters = traveledMeters;
 
       if (traveledMeters >= totalMeters) {
         timer.cancel();
         _isAnimating = false;
-        _pausedTraveledMeters = 0.0; // Reset after journey completes
+        _pausedTraveledMeters = 0.0;
         if (mounted) {
           setState(() {
             _currentPos = _routePoints.last;
-            _polylines.clear(); // Destination reached, clear polyline
+            _polylines.clear();
             _updateMarkersNoSetState();
           });
           _showJourneyCompletedDialog();
@@ -604,7 +604,7 @@ class _MapScreenState extends State<MapScreen> {
 
       final nextPoint = _positionAtDistance(cumDist, traveledMeters);
 
-      // Dynamic distance tallying
+
       final remainingMeters = totalMeters - traveledMeters;
       String distanceStr;
       if (remainingMeters > 1000) {
@@ -613,7 +613,7 @@ class _MapScreenState extends State<MapScreen> {
         distanceStr = "${remainingMeters.toStringAsFixed(0)} m";
       }
 
-      // Find which points are ahead of us
+
       int hi = 0;
       while (hi < cumDist.length && cumDist[hi] <= traveledMeters) {
         hi++;
@@ -623,19 +623,19 @@ class _MapScreenState extends State<MapScreen> {
 
       setState(() {
         _currentPos = nextPoint;
-        _distance = distanceStr; // Tally distance
+        _distance = distanceStr;
         _updateMarkersNoSetState();
 
-        // Sync to JourneyService for SOS use
+
         final js = Provider.of<JourneyService>(context, listen: false);
         js.updateIconPosition(nextPoint);
 
-        // Push live location to Supabase for tracker view
+
         if (js.activeJourneyId != null) {
           js.updateLiveLocation(js.activeJourneyId!, nextPoint);
         }
 
-        // Dynamically decrease polyline
+
         _polylines.clear();
         _polylines.add(
           Polyline(
@@ -709,7 +709,7 @@ class _MapScreenState extends State<MapScreen> {
 
       _speak("$_alertHeading. $_alertSubtext");
 
-      // Keep the nav alert for 7 seconds before allowing safety alerts to resume
+
       _navAlertPriorityTimer = Timer(const Duration(seconds: 7), () {
         if (mounted) {
           setState(() {
@@ -759,12 +759,12 @@ class _MapScreenState extends State<MapScreen> {
                 listen: false,
               );
 
-              // End journey in DB if we have an ID
+
               final journeyId = journeyService.activeJourneyId;
               if (journeyId != null) {
                 final dbSuccess = await journeyService.endJourney(journeyId);
                 if (dbSuccess) {
-                  // Update user statistics
+
                   await authService.updateUserStats(
                     rideIncrement: 1,
                     pointIncrement: 100,
@@ -775,8 +775,8 @@ class _MapScreenState extends State<MapScreen> {
 
               journeyService.clearActiveJourney();
               if (mounted) {
-                Navigator.pop(ctx); // Close dialog
-                Navigator.pop(context); // Navigate back to Setup
+                Navigator.pop(ctx);
+                Navigator.pop(context);
               }
             },
             style: ElevatedButton.styleFrom(
@@ -793,7 +793,7 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  /// Updates markers without an extra setState (called inside an existing setState)
+
   void _updateMarkersNoSetState() {
     final Set<Marker> newMarkers = {};
 
@@ -834,7 +834,7 @@ class _MapScreenState extends State<MapScreen> {
       );
     }
 
-    // SOS Markers (Red dots)
+
     final journeyService = Provider.of<JourneyService>(context, listen: false);
     for (var i = 0; i < journeyService.globalSosEvents.length; i++) {
       final event = journeyService.globalSosEvents[i];
@@ -918,7 +918,7 @@ class _MapScreenState extends State<MapScreen> {
       debugPrint("Error loading accident data: $e");
     }
 
-    // First alert is now initialized as "Waiting"
+
     if (_routeFetched) {
       _alertHeading = "Waiting...";
       _alertSubtext = "Please Start the Journey.";
@@ -957,7 +957,7 @@ class _MapScreenState extends State<MapScreen> {
 
     _totalAlertsShown++;
 
-    // Requirement: Caution every 5th time, otherwise Good Driving
+
     if (_totalAlertsShown % 5 == 0) {
       _currentCategory = 'Caution';
     } else {
@@ -967,7 +967,7 @@ class _MapScreenState extends State<MapScreen> {
     final alertsInCategory = _groupedAlerts[_currentCategory] ?? [];
     if (alertsInCategory.isEmpty) return;
 
-    // Use a simple counter for the current category to cycle through its alerts
+
     int currentCategoryIndex = 0;
     if (_currentCategory == 'Good Driving') {
       currentCategoryIndex = _totalAlertsShown % alertsInCategory.length;
@@ -993,7 +993,7 @@ class _MapScreenState extends State<MapScreen> {
     final events = journeyService.globalSosEvents;
 
     Map<String, dynamic>? nearestEvent;
-    double minDistance = 10; // Precise threshold
+    double minDistance = 10;
 
     for (var event in events) {
       final double eventLat = (event['latitude'] as num).toDouble();
@@ -1002,7 +1002,7 @@ class _MapScreenState extends State<MapScreen> {
 
       final double distance = _haversineMeters(_currentPos!, eventPos);
 
-      // We only care about events within 2 meters
+
       if (distance <= 10.0) {
         if (distance < minDistance) {
           minDistance = distance;
@@ -1014,13 +1014,13 @@ class _MapScreenState extends State<MapScreen> {
     if (nearestEvent != null) {
       final String id = nearestEvent['id']?.toString() ?? '';
 
-      // Update active event for UI dismissal logic
+
       if (_activeSosEvent?['id']?.toString() != id) {
         final Map<String, dynamic> eventData = nearestEvent;
         setState(() {
           _activeSosEvent = eventData;
 
-          // Only trigger audio/heading alert once per incident
+
           if (id.isNotEmpty && !_triggeredSosIds.contains(id)) {
             _triggeredSosIds.add(id);
             final String type = eventData['incident_type'] ?? 'Incident';
@@ -1037,7 +1037,7 @@ class _MapScreenState extends State<MapScreen> {
         });
       }
     } else {
-      // Clear active event as user icon crosses/leaves the 2m radius
+
       if (_activeSosEvent != null) {
         setState(() {
           _activeSosEvent = null;
@@ -1048,12 +1048,12 @@ class _MapScreenState extends State<MapScreen> {
 
   String _getPositiveKeyword() {
     final keywords = ['Safe Driving', 'Excellent', 'Smooth Ride', 'Great Job'];
-    // Iteration 1-4 are positive
-    // _totalAlertsShown % 5 results in 1, 2, 3, 4, 0
-    // If it's 0, it's Caution (handled by _currentCategory)
-    // Otherwise, use 1..4 to index into keywords 0..3
+
+
+
+
     int idx = (_totalAlertsShown % 5) - 1;
-    if (idx < 0) idx = 0; // Fallback
+    if (idx < 0) idx = 0;
     return keywords[idx % keywords.length];
   }
 
@@ -1074,10 +1074,10 @@ class _MapScreenState extends State<MapScreen> {
         decoration: AppTheme.premiumBackground,
         child: Stack(
           children: [
-            // Real Map View
+
             Consumer<JourneyService>(
               builder: (context, journeyService, child) {
-                // Ensure markers are refreshed when SOS points change
+
                 _updateMarkersNoSetState();
                 return GoogleMap(
                   initialCameraPosition: _kDelhi,
@@ -1158,7 +1158,7 @@ class _MapScreenState extends State<MapScreen> {
             SafeArea(
               child: Column(
                 children: [
-                  // Top Info Card
+
                   Container(
                     margin: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -1261,7 +1261,7 @@ class _MapScreenState extends State<MapScreen> {
                                       GestureDetector(
                                         onTap: () {
                                           if (_isAnimating) {
-                                            // STOP: cancel timers and save current position for resume
+
                                             _animationTimer?.cancel();
                                             _alertTimer?.cancel();
                                             setState(() {
@@ -1275,14 +1275,14 @@ class _MapScreenState extends State<MapScreen> {
                                             _checkProximityAlerts();
                                             _speak(_alertSubtext);
                                           } else {
-                                            // DEMO / RESUME: continue from where we stopped
+
                                             if (_startLatLng != null &&
                                                 _destLatLng != null) {
                                               _animationTimer?.cancel();
                                               setState(() {
                                                 _isAnimating = false;
                                                 _showSteps =
-                                                    true; // Auto-show incidents when demo starts
+                                                    true;
                                               });
                                               _startRouteAnimation(
                                                 initialTraveledMeters:
@@ -1348,7 +1348,7 @@ class _MapScreenState extends State<MapScreen> {
 
                   const Spacer(),
 
-                  // Navigation Controls (Follow Me & My Location)
+
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 2),
                     child: Row(
@@ -1449,7 +1449,7 @@ class _MapScreenState extends State<MapScreen> {
                         backgroundColor: Colors.redAccent,
                         extendedPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
-                        ), // Slimmer button
+                        ),
                         label: const Text(
                           'END NAVIGATION',
                           style: TextStyle(
@@ -1462,7 +1462,7 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                     ),
 
-                  // Info popup panel below END NAVIGATION
+
                   AnimatedSize(
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
@@ -1500,7 +1500,7 @@ class _MapScreenState extends State<MapScreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Drag Handle
+
                                 Container(
                                   width: 40,
                                   height: 4,
@@ -1515,7 +1515,7 @@ class _MapScreenState extends State<MapScreen> {
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        // Top Header Row: Professional Tiles
+
                                         Container(
                                           padding: const EdgeInsets.symmetric(
                                             vertical: 14,
@@ -1558,7 +1558,7 @@ class _MapScreenState extends State<MapScreen> {
                                           ),
                                         ),
                                         const SizedBox(height: 8),
-                                        // Alert Container with Glassmorphism
+
                                         Container(
                                           padding: const EdgeInsets.all(16),
                                           decoration: BoxDecoration(
@@ -1598,7 +1598,7 @@ class _MapScreenState extends State<MapScreen> {
                                                             CrossAxisAlignment
                                                                 .start,
                                                         children: [
-                                                          // Dynamic Badge (Caution or Excellence)
+
                                                           Wrap(
                                                             crossAxisAlignment:
                                                                 WrapCrossAlignment
@@ -1822,7 +1822,7 @@ class _MapScreenState extends State<MapScreen> {
                                           ),
                                         ),
                                         const SizedBox(height: 12),
-                                        // Incidents Section
+
                                         const Align(
                                           alignment: Alignment.centerLeft,
                                           child: Padding(
@@ -2065,29 +2065,29 @@ class _MapScreenState extends State<MapScreen> {
     return Column(
       children: [
         Container(
-          width: 34, // reduced from 38
+          width: 34,
           height: 34,
           decoration: BoxDecoration(
             color: color.withOpacity(0.12),
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: color, size: 18), // reduced from 20
+          child: Icon(icon, color: color, size: 18),
         ),
-        const SizedBox(height: 4), // reduced from 6
+        const SizedBox(height: 4),
         Text(
           value,
           style: TextStyle(
             color: color,
             fontWeight: FontWeight.bold,
-            fontSize: 13, // reduced from 14
+            fontSize: 13,
           ),
         ),
-        const SizedBox(height: 1), // reduced from 2
+        const SizedBox(height: 1),
         Text(
           label,
           style: const TextStyle(
             color: Colors.white54,
-            fontSize: 9, // reduced from 10
+            fontSize: 9,
           ),
         ),
       ],

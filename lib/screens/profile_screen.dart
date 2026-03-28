@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'dart:convert'; // Added for jsonDecode
+import 'dart:convert';
 import '../services/auth_service.dart';
 import '../services/journey_service.dart';
 import '../providers/theme_provider.dart';
@@ -20,7 +20,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final List<TextEditingController> _contactControllers = [];
   final List<TextEditingController> _contactNameControllers =
-      []; // New controller list for names
+      [];
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _vehicleController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -37,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _notificationsEnabled = true;
   bool _locationSharing = true;
 
-  // Add a key to force FutureBuilder refresh
+
   int _refreshKey = 0;
 
   void _refreshProfile() {
@@ -57,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final profile = await authService.getProfile();
 
     if (profile != null) {
-      // Clear existing data to avoid duplicates on re-fetch
+
       _contactControllers.clear();
       _contactNameControllers.clear();
 
@@ -103,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     }
 
-    // Sync with Home Screen emergency contact if exists
+
     try {
       final prefs = await SharedPreferences.getInstance();
       final homeName = prefs.getString('home_emergency_name') ?? '';
@@ -150,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _contactNameControllers.removeAt(index);
     });
 
-    // If deleting a contact that came from home screen, clear it there too
+
     try {
       final prefs = await SharedPreferences.getInstance();
       final hName = prefs.getString('home_emergency_name') ?? '';
@@ -171,7 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() => _isSaving = true);
     final authService = Provider.of<AuthService>(context, listen: false);
 
-    // Save profile details if in edit mode
+
     if (_isEditMode) {
       final profileSuccess = await authService.updateProfileExtended(
         fullName: _nameController.text.trim(),
@@ -196,7 +196,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     }
 
-    // Save emergency contacts
+
     final List<Map<String, String>> contacts = [];
 
     for (int i = 0; i < _contactControllers.length; i++) {
@@ -227,7 +227,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           backgroundColor: contactsSuccess ? Colors.green : Colors.redAccent,
         ),
       );
-      // Force refresh the profile data
+
       _refreshProfile();
     }
   }
@@ -298,7 +298,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        // Force refresh the profile data to show new photo
+
         _refreshProfile();
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -358,7 +358,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         );
         if (success) {
-          // Force refresh the profile data to remove photo
+
           _refreshProfile();
         }
       }
@@ -418,7 +418,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: CircularProgressIndicator(color: Colors.white),
                 )
               : FutureBuilder<Map<String, dynamic>?>(
-                  key: ValueKey(_refreshKey), // Force rebuild when key changes
+                  key: ValueKey(_refreshKey),
                   future: authService.getProfile(),
                   builder: (context, snapshot) {
                     final profile = snapshot.data;
@@ -436,7 +436,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Profile Photo Section
+
                             Center(
                               child: Stack(
                                 children: [
@@ -541,12 +541,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             const SizedBox(height: 32),
 
-                            // Safety Score Card (New Feature)
+
                             _buildSafetyScoreCard(profile),
 
                             const SizedBox(height: 24),
 
-                            // SOS Reports Card (New Feature)
+
                             _buildSOSReportsCard(
                               authService,
                               Provider.of<JourneyService>(context),
@@ -554,22 +554,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                             const SizedBox(height: 24),
 
-                            // Tracking Requests Card (New Feature)
+
                             _buildTrackingRequestsCard(authService),
 
                             const SizedBox(height: 24),
 
-                            // Profile Details Section
+
                             _buildProfileDetailsCard(authService, profile),
 
                             const SizedBox(height: 24),
 
-                            // Account Statistics
+
                             _buildAccountStatsCard(authService),
 
                             const SizedBox(height: 24),
 
-                            // Emergency Contacts Section
+
                             Text(
                               'EMERGENCY CONTACTS',
                               style: TextStyle(
@@ -634,7 +634,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               ),
                                             ),
                                           ),
-                                          if (_isEditMode) // Allow deleting any contact in edit mode
+                                          if (_isEditMode)
                                             IconButton(
                                               icon: Icon(
                                                 Icons.delete_outline,
@@ -650,7 +650,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       const SizedBox(height: 12),
                                       TextField(
                                         controller:
-                                            _contactControllers[index], // Phone number
+                                            _contactControllers[index],
                                         keyboardType: TextInputType.phone,
                                         style: TextStyle(
                                           color: Theme.of(
@@ -701,17 +701,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                             const SizedBox(height: 24),
 
-                            // Settings Section
+
                             _buildSettingsCard(),
 
                             const SizedBox(height: 24),
 
-                            // Security Section
+
                             _buildSecurityCard(),
 
                             const SizedBox(height: 32),
 
-                            // Logout Button
+
                             Center(
                               child: TextButton.icon(
                                 onPressed: () async {
@@ -780,7 +780,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                             const SizedBox(height: 48),
 
-                            // Action Buttons
+
                             if (_isEditMode) ...[
                               Row(
                                 children: [
@@ -791,7 +791,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           : () {
                                               setState(() {
                                                 _isEditMode = false;
-                                                _fetchProfile(); // Reset fields
+                                                _fetchProfile();
                                               });
                                             },
                                       style: OutlinedButton.styleFrom(
@@ -827,7 +827,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: AppTheme.primaryOrange,
                                         foregroundColor:
-                                            Colors.black, // Enforce Black Text
+                                            Colors.black,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
                                             15,
@@ -866,7 +866,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppTheme.primaryOrange,
                                     foregroundColor:
-                                        Colors.black, // Enforce Black Text
+                                        Colors.black,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(15),
                                     ),
@@ -974,7 +974,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               'Email',
               _emailController,
               enabled: false,
-            ), // Email usually not editable directly
+            ),
             const SizedBox(height: 12),
             _buildEditableField(
               Icons.directions_bike,
@@ -1533,7 +1533,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          _refreshProfile(); // Trigger rebuild for FutureBuilder
+          _refreshProfile();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -1967,7 +1967,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Expanded(
                             child: OutlinedButton(
                               onPressed: () {
-                                // Optional: Implement ignore/reject
+
                               },
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.white54,

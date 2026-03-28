@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<String> _fuelTypes = ['Petrol', 'Diesel', 'CNG', 'EV', 'Hybrid'];
 
-  // Safety Tip Cycling
+
   int _tipIndex = 0;
   final List<String> _safetyTips = [
     'Check tire pressure daily.',
@@ -145,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _emergencyContactController.text =
           prefs.getString('home_emergency_contact') ?? '';
 
-      // Validation checks for loaded data
+
       if (_licenseController.text.length > 4) {
         final actualInput = _licenseController.text.substring(4);
         if (actualInput.length >= 2) {
@@ -332,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() => _isLoading = true);
 
-    // Save emergency contact info (Update matching name if exists, otherwise add)
+
     final eName = _emergencyNameController.text.trim();
     final eNumber = _emergencyContactController.text.trim();
     if (eName.isNotEmpty && eNumber.isNotEmpty) {
@@ -363,7 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
       await authService.updateEmergencyContacts(finalContacts);
     }
 
-    // Simulate "Please wait" behavior
+
     await Future.delayed(const Duration(seconds: 1));
 
     setState(() => _isLoading = false);
@@ -379,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
 
-    // Navigate to Ride Screen for Start/End inputs
+
     Navigator.pushNamed(
       context,
       '/ride',
@@ -447,7 +447,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                // User Profile Header (Glassmorphism)
+
                 Container(
                   margin: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -617,7 +617,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
-                // Safety Tips Section
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: AnimatedSwitcher(
@@ -737,7 +737,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      // New Scan Helmet Button
+
                       SizedBox(
                         width: double.infinity,
                         height: 50,
@@ -826,7 +826,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 const SizedBox(height: 24),
 
-                // Pre-ride Checklist
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: _buildPreRideChecklist(),
@@ -834,7 +834,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 const SizedBox(height: 32),
 
-                // Bottom Form Section
+
                 Container(
                   padding: const EdgeInsets.fromLTRB(24, 32, 24, 40),
                   decoration: BoxDecoration(
@@ -849,7 +849,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Column(
                     children: [
-                      // Professional Vehicle Type Selection
+
                       const Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -877,12 +877,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             scrollDirection: Axis.horizontal,
                             padding: const EdgeInsets.only(
                               bottom: 12,
-                            ), // space for scrollbar
+                            ),
                             child: Row(
                               children: [
                                 const SizedBox(
                                   width: 16,
-                                ), // Extra start padding
+                                ),
                                 ...[
                                   'Two Wheeler',
                                   'Three Wheeler',
@@ -962,7 +962,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 }),
                                 const SizedBox(
                                   width: 4,
-                                ), // Extra end padding to ensure last item is fully visible
+                                ),
                               ],
                             ),
                           ),
@@ -1030,7 +1030,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       if (_selectedBrand != null) ...[
                         const SizedBox(height: 24),
-                        // License Number (Indian Format)
+
                         TextField(
                           controller: _licenseController,
                           style: const TextStyle(color: Colors.white),
@@ -1044,7 +1044,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   );
                             }
-                            // Validation: First 2 letters after 'IND ' must be capital
+
                             final actualInput = _licenseController.text
                                 .substring(4);
                             if (actualInput.length >= 2) {
@@ -1085,12 +1085,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (_selectedBrand != null &&
                           _licenseController.text.trim().length > 4) ...[
                         const SizedBox(height: 16),
-                        // RC Number
+
                         TextField(
                           controller: _rcController,
                           style: const TextStyle(color: Colors.white),
                           onChanged: (_) {
-                            // Validation: First 2 letters must be capital
+
                             final input = _rcController.text;
                             if (input.length >= 2) {
                               final firstTwo = input.substring(0, 2);
@@ -1129,7 +1129,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       if (_rcController.text.isNotEmpty && _isRcValid) ...[
                         const SizedBox(height: 16),
-                        // Fuel Type Selection (Optional)
+
                         DropdownButtonFormField<String>(
                           initialValue: _selectedFuel,
                           dropdownColor: const Color(0xFF1E293B),
@@ -1163,7 +1163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         if (_selectedFuel != null) ...[
                           const SizedBox(height: 16),
-                          // Emergency Name
+
                           TextField(
                             controller: _emergencyNameController,
                             style: const TextStyle(color: Colors.white),
@@ -1190,7 +1190,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          // Emergency Contact
+
                           TextField(
                             controller: _emergencyContactController,
                             keyboardType: TextInputType.phone,
@@ -1222,7 +1222,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       const SizedBox(height: 12),
 
-                      // Drunk Driving Check
+
                       if (_selectedVehicleType != null &&
                           _selectedBrand != null &&
                           _licenseController.text.length > 4 &&
@@ -1467,7 +1467,7 @@ class _HomeScreenState extends State<HomeScreen> {
         style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
       ),
       onTap: () {
-        Navigator.pop(context); // Close drawer
+        Navigator.pop(context);
         Navigator.pushNamed(context, route);
       },
     );

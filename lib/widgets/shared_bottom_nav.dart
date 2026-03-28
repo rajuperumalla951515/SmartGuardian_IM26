@@ -11,10 +11,10 @@ class SharedBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8), // Black/Dark background
+        color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
         border: Border(
           top: BorderSide(
-            color: Theme.of(context).primaryColor.withOpacity(0.3), // Orange border
+            color: Theme.of(context).primaryColor.withOpacity(0.3),
             width: 1,
           ),
         ),
@@ -86,10 +86,10 @@ class _GlassNavIconState extends State<_GlassNavIcon> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // Use Orange for active/hover, White/Grey for inactive by default
-    final effectiveColor = widget.color ?? 
+
+    final effectiveColor = widget.color ??
         (widget.isActive || _isHovered ? AppTheme.primaryOrange : Colors.white70);
-    
+
     final showGlass = widget.isActive || _isHovered;
 
     return MouseRegion(
@@ -101,13 +101,13 @@ class _GlassNavIconState extends State<_GlassNavIcon> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          // FIX: Always maintain same border width and structure to prevent layout shift
+
           decoration: BoxDecoration(
             color: showGlass ? effectiveColor.withOpacity(0.15) : Colors.transparent,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: showGlass ? effectiveColor.withOpacity(0.5) : Colors.transparent,
-              width: 1, // Fixed width
+              width: 1,
             ),
             boxShadow: showGlass ? [
               BoxShadow(
@@ -123,7 +123,7 @@ class _GlassNavIconState extends State<_GlassNavIcon> {
               Icon(
                 widget.icon,
                 color: effectiveColor,
-                size: 24, // Fixed size to prevent shifting (was changing 24->28)
+                size: 24,
               ),
               const SizedBox(height: 4),
               Text(

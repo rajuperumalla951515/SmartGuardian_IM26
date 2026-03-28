@@ -7,8 +7,8 @@ import 'dart:typed_data';
 import '../theme/app_theme.dart';
 
 class MapMarkerService {
-  static const double markerSize = 70.0; // Total size including border
-  static const double imageSize = 60.0; // The actual image circle
+  static const double markerSize = 70.0;
+  static const double imageSize = 60.0;
 
   static Future<BitmapDescriptor> getProfileMarker(String? photoUrl) async {
     try {
@@ -19,8 +19,8 @@ class MapMarkerService {
       final resp = await http.get(Uri.parse(photoUrl)).timeout(const Duration(seconds: 10));
       if (resp.statusCode == 200) {
         final bytes = resp.bodyBytes;
-        final codec = await ui.instantiateImageCodec(bytes, 
-          targetWidth: imageSize.toInt(), 
+        final codec = await ui.instantiateImageCodec(bytes,
+          targetWidth: imageSize.toInt(),
           targetHeight: imageSize.toInt());
         final frame = await codec.getNextFrame();
         final image = frame.image;
@@ -42,10 +42,10 @@ class MapMarkerService {
     final paint = Paint()
       ..color = AppTheme.primaryOrange
       ..style = ui.PaintingStyle.fill;
-    
+
     final center = markerSize / 2;
     canvas.drawCircle(Offset(center, center), center, paint);
-    
+
     final whitePaint = Paint()
       ..color = Colors.white
       ..style = ui.PaintingStyle.stroke
@@ -55,7 +55,7 @@ class MapMarkerService {
     final picture = recorder.endRecording();
     final img = await picture.toImage(markerSize.toInt(), markerSize.toInt());
     final data = await img.toByteData(format: ui.ImageByteFormat.png);
-    
+
     return BitmapDescriptor.fromBytes(data!.buffer.asUint8List());
   }
 
@@ -64,19 +64,19 @@ class MapMarkerService {
     final canvas = Canvas(pictureRecorder);
     final center = markerSize / 2;
     final imgRadius = imageSize / 2;
-    
-    // Draw white background/border
+
+
     final borderPaint = Paint()..color = Colors.white;
     canvas.drawCircle(Offset(center, center), center, borderPaint);
 
     final bgPaint = Paint()..color = AppTheme.primaryOrange;
     canvas.drawCircle(Offset(center, center), center - 2, bgPaint);
 
-    // Draw circular clip for image
+
     final path = Path()..addOval(Rect.fromCircle(center: Offset(center, center), radius: imgRadius));
     canvas.clipPath(path);
-    
-    // Draw image
+
+
     final src = Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble());
     final dst = Rect.fromCircle(center: Offset(center, center), radius: imgRadius);
     canvas.drawImageRect(image, src, dst, Paint());

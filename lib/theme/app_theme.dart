@@ -8,10 +8,10 @@ class AppTheme {
 
   static const BoxDecoration premiumBackground = BoxDecoration(
     gradient: RadialGradient(
-      center: Alignment(0.0, -0.2), // Center aligned for better spread
+      center: Alignment(0.0, -0.2),
       radius: 1.2,
       colors: [
-        Color(0xFF1A0A00), // Very dark orange/brown for subtle glow
+        Color(0xFF1A0A00),
         backgroundBlack,
       ],
       stops: [0.0, 1.0],

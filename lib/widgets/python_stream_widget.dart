@@ -25,7 +25,7 @@ class _PythonStreamWidgetState extends State<PythonStreamWidget> {
   }
 
   void _registerFactory() {
-    // Register the HTML element for Web
+
     ui_web.platformViewRegistry.registerViewFactory(
       viewId,
       (int viewId) => html.ImageElement()
