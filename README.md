@@ -100,24 +100,3 @@ graph TD
 > "Smart Guardian stands as a testament to innovative problem-solving, reaching the **Finals** by demonstrating technical robustness, real-world utility, and a seamless user experience."
 
 ---
-
-## 💻 Getting Started
-
-1.  **Clone the Repository**:
-    ```bash
-    git clone https://github.com/rajuperumalla951515/SmartGuardian_IM26.git
-    ```
-2.  **Configuration**:
-    - Add your Google Maps API key to the specified placeholders in:
-        - `lib/core/constants.dart`
-        - `android/app/src/main/AndroidManifest.xml`
-        - `ios/Runner/AppDelegate.swift`
-        - `web/index.html`
-3.  **Install Dependencies**:
-    ```bash
-    flutter pub get
-    ```
-4.  **Run Application**:
-    ```bash
-    flutter run
-    ```
